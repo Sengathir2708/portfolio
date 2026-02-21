@@ -1,9 +1,13 @@
-import { motion } from "motion/react";
-import { Mail, Phone, Github, Linkedin, Send, MapPin } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Mail, Phone, Github, Linkedin, Send, MapPin, CheckCircle, AlertCircle, FileDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
+
+const FORMSPREE_URL = "https://formspree.io/f/xvzbwzyq";
+
+type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -12,18 +16,42 @@ export function Contact() {
     message: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
-      alert("Thank you for your message! I'll get back to you soon.");
-      setFormData({ name: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }, 1000);
+    setStatus("submitting");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(FORMSPREE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", message: "" });
+        // Auto-reset success state after 5 seconds
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        const data = await response.json();
+        setErrorMessage(data?.errors?.[0]?.message || "Something went wrong. Please try again.");
+        setStatus("error");
+      }
+    } catch {
+      setErrorMessage("Network error. Please check your connection and try again.");
+      setStatus("error");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -31,6 +59,11 @@ export function Contact() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    // Clear error when user starts typing again
+    if (status === "error") {
+      setStatus("idle");
+      setErrorMessage("");
+    }
   };
 
   const contactInfo = [
@@ -137,13 +170,37 @@ export function Contact() {
                   })}
                 </div>
 
+                {/* Resume Download */}
+                <motion.a
+                  href="/resume.pdf"
+                  download="Sengathir_R_Resume.pdf"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.35 }}
+                  whileHover={{ x: 10, transition: { duration: 0.2 } }}
+                  className="flex items-start gap-4 p-4 mt-6 bg-white/10 backdrop-blur-sm rounded-2xl hover:bg-white/20 transition-all group cursor-pointer"
+                >
+                  <div className="p-3 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+                    <FileDown className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm text-blue-100 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Resume
+                    </div>
+                    <div className="font-semibold" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Download My Resume (PDF)
+                    </div>
+                  </div>
+                </motion.a>
+
                 {/* Location */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.4 }}
-                  className="mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-2xl"
+                  className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-2xl"
                 >
                   <div className="flex items-center gap-3">
                     <MapPin className="h-6 w-6" />
@@ -169,77 +226,131 @@ export function Contact() {
                 Send a Message
               </h3>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Your Name
-                  </label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    required
-                    className="w-full px-4 py-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-400 transition-colors"
-                  />
-                </div>
+              <AnimatePresence mode="wait">
+                {status === "success" ? (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.5, type: "spring" }}
+                    className="flex flex-col items-center justify-center py-12 text-center"
+                  >
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                      className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-lg"
+                    >
+                      <CheckCircle className="h-10 w-10 text-white" />
+                    </motion.div>
+                    <h4 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      Message Sent!
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Thank you for reaching out! I'll get back to you as soon as possible.
+                    </p>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key="form"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onSubmit={handleSubmit}
+                    className="space-y-6"
+                  >
+                    {/* Error Banner */}
+                    <AnimatePresence>
+                      {status === "error" && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, height: 0 }}
+                          animate={{ opacity: 1, y: 0, height: "auto" }}
+                          exit={{ opacity: 0, y: -10, height: 0 }}
+                          className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl"
+                        >
+                          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                          <div>
+                            <p className="text-red-700 dark:text-red-400 text-sm font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {errorMessage}
+                            </p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Your Email
-                  </label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="john@example.com"
-                    required
-                    className="w-full px-4 py-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-400 transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Your Message
-                  </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Tell me about your project or opportunity..."
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-400 transition-colors resize-none"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Your Name
+                      </label>
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="John Doe"
+                        required
+                        className="w-full px-4 py-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-400 transition-colors"
                       />
-                      Sending...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Send className="h-5 w-5" />
-                      Send Message
-                    </span>
-                  )}
-                </Button>
-              </form>
+                    </div>
+
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Your Email
+                      </label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="john@example.com"
+                        required
+                        className="w-full px-4 py-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-400 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Your Message
+                      </label>
+                      <Textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        placeholder="Tell me about your project or opportunity..."
+                        required
+                        rows={6}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-400 transition-colors resize-none"
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={status === "submitting"}
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {status === "submitting" ? (
+                        <span className="flex items-center gap-2">
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                          />
+                          Sending...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Send className="h-5 w-5" />
+                          Send Message
+                        </span>
+                      )}
+                    </Button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </div>
