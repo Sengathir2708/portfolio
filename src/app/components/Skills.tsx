@@ -8,12 +8,12 @@ export function Skills() {
       icon: Code,
       color: "blue",
       skills: [
-        { name: "Java", level: 85 },
-        { name: "Python", level: 80 },
-        { name: "SQL", level: 75 },
-        { name: "HTML", level: 90 },
-        { name: "CSS", level: 85 },
-        { name: "JavaScript", level: 75 },
+        { name: "Java", level: 100 },
+        { name: "Python", level: 100 },
+        { name: "SQL", level: 100 },
+        { name: "HTML", level: 100 },
+        { name: "CSS", level: 100 },
+        { name: "JavaScript", level: 100 },
       ],
     },
     {
@@ -21,10 +21,10 @@ export function Skills() {
       icon: Wrench,
       color: "purple",
       skills: [
-        { name: "Excel", level: 80 },
-        { name: "Power BI", level: 70 },
-        { name: "MySQL", level: 85 },
-        { name: "PostgreSQL", level: 75 },
+        { name: "Excel", level: 100 },
+        { name: "Power BI", level: 100 },
+        { name: "MySQL", level: 100 },
+        { name: "PostgreSQL", level: 100 },
       ],
     },
     {
@@ -32,9 +32,9 @@ export function Skills() {
       icon: Monitor,
       color: "green",
       skills: [
-        { name: "Eclipse", level: 85 },
-        { name: "VS Code", level: 90 },
-        { name: "Jupyter Notebook", level: 80 },
+        { name: "Eclipse", level: 100 },
+        { name: "VS Code", level: 100 },
+        { name: "Jupyter Notebook", level: 100 },
       ],
     },
   ];
@@ -122,9 +122,7 @@ export function Skills() {
                         <span className="font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
                           {skill.name}
                         </span>
-                        <span className={`text-sm font-semibold ${getColorClasses(category.color, "text")}`}>
-                          {skill.level}%
-                        </span>
+
                       </div>
                       <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <motion.div

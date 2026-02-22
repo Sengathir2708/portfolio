@@ -22,6 +22,8 @@ export function Navigation() {
     document.documentElement.classList.toggle("dark");
   };
 
+
+
   const navItems = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
@@ -43,11 +45,10 @@ export function Navigation() {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg"
+          : "bg-transparent"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -77,7 +78,7 @@ export function Navigation() {
                   {item.name}
                 </motion.button>
               ))}
-              
+
               {/* Download Resume Button */}
               <motion.a
                 href="/resume.pdf"
@@ -92,7 +93,7 @@ export function Navigation() {
                   <span style={{ fontFamily: 'Inter, sans-serif' }}>Resume</span>
                 </Button>
               </motion.a>
-              
+
               <Button
                 onClick={toggleTheme}
                 variant="outline"
@@ -101,6 +102,11 @@ export function Navigation() {
               >
                 {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
+
+
+
+
+
             </div>
 
             {/* Mobile Menu Button */}
@@ -144,7 +150,7 @@ export function Navigation() {
                   {item.name}
                 </button>
               ))}
-              
+
               {/* Download Resume Button - Mobile */}
               <a
                 href="/resume.pdf"

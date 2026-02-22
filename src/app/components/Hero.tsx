@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const roles = [
   "Java Developer",
-  "Data Science Enthusiast", 
+  "Data Science Enthusiast",
   "Full Stack Learner"
 ];
 
@@ -98,8 +98,8 @@ export function Hero() {
               className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-xl"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
-              Motivated B.Tech IT student with a strong foundation in Java, Data Science, 
-              and web technologies. Passionate about building scalable applications and 
+              Motivated B.Tech IT student with a strong foundation in Java, Data Science,
+              and web technologies. Passionate about building scalable applications and
               solving real-world problems using technology.
             </motion.p>
 
@@ -143,9 +143,9 @@ export function Hero() {
                 className="rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm bg-white/10 dark:bg-black/10 p-2"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1568716353609-12ddc5c67f04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2RlJTIwc2NyZWVuJTIwcHJvZ3JhbW1pbmclMjBsaW5lcyUyMHN5bnRheHxlbnwxfHx8fDE3NzE2NTEwNjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  src="./photo.jpeg"
                   alt="Programming code on screen"
-                  className="rounded-2xl w-full"
+                  className="rounded-2xl w-80 h-80 w-full"
                 />
               </motion.div>
             </div>
